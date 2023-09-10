@@ -84,6 +84,8 @@ theorem toDual_of_toDual_eq_self (gradient': E →L[ℝ] ℝ): gradient' = ∇* 
 /-
 ### Gradient and its `ε - δ` definition
 -/
+variable {gradf gradg: E}
+
 theorem HasFDeriv_Convergence (h: HasFDerivAt f (f' x) x) :
   ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ (x' : E), ‖x - x'‖ ≤ δ
     → ‖f x' - f x - (f' x) (x' - x)‖ ≤ ε * ‖x - x'‖ := by
@@ -176,7 +178,7 @@ theorem HasGradn_HasFDeriv' (h: HasGradnAt f (grad gradient') x): HasFDerivAt f 
 ### Calculations on Gradient
 -/
 variable {g : E → ℝ} {g' : E → (E →L[ℝ] ℝ)}
-variable {gradf gradg: E} (hf : HasGradnAt f gradf x) (hg : HasGradnAt g gradg x) (c : ℝ)
+variable (hf : HasGradnAt f gradf x) (hg : HasGradnAt g gradg x) (c : ℝ)
 
 theorem HasGradnAt.const_smul : HasGradnAt (fun x => c • f x) (c • gradf) x := by
   let f':= ∇* gradf
