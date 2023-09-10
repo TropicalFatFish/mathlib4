@@ -3,7 +3,6 @@ Copyright (c) 2023 Ziyu Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yu Penghao(PKU), Ziyu Wang(PKU), Chenyi Li(PKU), Cao Zhipeng(HUST)
 -/
-import Mathlib.Tactic
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.InnerProductSpace.Dual
@@ -52,7 +51,7 @@ local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
 -- Translate `g` in `Hilbert Space E` to its dual ℝ-ContinuousLinearMap : `⟨ g , ⬝ ⟩`
 local notation "∇*" gradient  => (toDualMap ℝ _) gradient
 /-
-  Translate the ℝ-ContinuousLinearMap on `Hilbert Space E` to 
+  Translate the ℝ-ContinuousLinearMap on `Hilbert Space E` to
   its dual element on E by Frechet-Riesz Represent Theorem
 -/
 def grad : (E →L[ℝ] ℝ) → E
@@ -62,8 +61,8 @@ theorem grad_equiv :
   ∀ x y :E, inner (grad (f' x)) y = f' x y := by
     intro x y; apply toDual_symm_apply
 
-/- 
-  The gradient of a function `f` at a point `x` is defined to be 
+/-
+  The gradient of a function `f` at a point `x` is defined to be
   the dual of `fderiv` of `f` at `x`
 -/
 def gradn (f : E → ℝ) (x : E) : E := grad (fderiv ℝ f x)
@@ -115,7 +114,7 @@ theorem Convergence_HasFDeriv (h : ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ (
   specialize h ε epos
   rcases h with ⟨δ, dpos, h⟩
   rw [Metric.mem_nhds_iff]
-  use δ ; constructor
+  use δ; constructor
   apply dpos
   intro x' x1mem
   have : ‖x - x'‖ ≤ δ:= by
@@ -173,7 +172,7 @@ theorem HasGradn_HasFDeriv' (h: HasGradnAt f (grad gradient') x): HasFDerivAt f 
   rw [← toDual_of_toDual_eq_self] at h
   exact h
 
-/- 
+/-
 ### Calculations on Gradient
 -/
 variable {g : E → ℝ} {g' : E → (E →L[ℝ] ℝ)}
@@ -198,7 +197,7 @@ theorem HasGradnAt.add : HasGradnAt (fun x => f x + g x) (gradf + gradg) x := by
   let g':= ∇* gradg
   have h₁: HasFDerivAt (fun x => f x + g x) (f' + g') x := HasFDerivAt.add hf hg
   have h₂: f' + g' = ∇* (gradf + gradg):= by
-    apply ContinuousLinearMap.ext_iff.mpr ; intro x
+    apply ContinuousLinearMap.ext_iff.mpr; intro x
     have l₁: (∇* (gradf + gradg)) x = ⟪gradf + gradg, x⟫:= rfl
     have l₂: (f' + g') x = f' x + g' x := rfl
     rw[l₁, l₂, inner_add_left]; rfl
@@ -220,7 +219,7 @@ theorem HasGradnAt.sum (h : ∀ i ∈ u, HasGradnAt (A i) (A' i) x) :
   have h₁: HasFDerivAt (fun y => ∑ i in u, A i y)
     (∑ i in u,∇* (A' i)) x :=  HasFDerivAt.sum h
   have h₂: ∑ i in u, (∇* (A' i)) = ∇* (∑ i in u, A' i):= by
-    apply ContinuousLinearMap.ext_iff.mpr ; intro y
+    apply ContinuousLinearMap.ext_iff.mpr; intro y
     have l₂: (∑ i in u, ⟪A' i, y⟫) = (∑ i in u, (∇* (A' i)) y) := rfl
     have l₃: (∑ i in u, ⟪A' i, y⟫) = ⟪∑ i in u, (A' i), y⟫ := by rw [sum_inner]
     have l₄: (∇* (∑ i in u, A' i)) y = ⟪∑ i in u, A' i, y⟫ := rfl
@@ -232,7 +231,7 @@ theorem HasGradnAt.neg : HasGradnAt (fun x => - f x) (- gradf) x := by
   let f':= ∇* gradf
   have h₁: HasFDerivAt (fun x => - f x) (- f') x := HasFDerivAt.neg hf
   have h₂: (∇* (-gradf)) = - f':= by
-    apply ContinuousLinearMap.ext_iff.mpr ; intro y
+    apply ContinuousLinearMap.ext_iff.mpr; intro y
     have l₁: (∇* - gradf) y = ⟪- gradf, y⟫:= rfl
     have l₂: (- f') y= - (f' y):= rfl
     have l₃: f' y = ⟪gradf, y⟫:= rfl
@@ -261,7 +260,7 @@ theorem HasGradnAt.const_sub : HasGradnAt (fun x => c - f x) (- gradf) x := by
   have h₁: HasFDerivAt (fun x => c - f x) (- f') x := by
     apply HasFDerivAt.const_sub hf
   have h₂: (∇* (- gradf)) = - f' := by
-    apply ContinuousLinearMap.ext_iff.mpr ; intro y
+    apply ContinuousLinearMap.ext_iff.mpr; intro y
     have l₁: (∇* (-gradf)) y = ⟪-gradf, y⟫ := rfl
     have l₂: (- f') y= - (f' y) := rfl
     have l₃: f' y = ⟪gradf, y⟫ := rfl
@@ -279,7 +278,7 @@ theorem HasGradnAt.comp {g : ℝ → ℝ} {gradg : ℝ} (hg : HasGradoneAt g gra
     rw [HasGradoneAt] at hg; apply hg
     apply hf
   have h₂ : (∇* (gradg • gradf)) = g'.comp f':= by
-    apply ContinuousLinearMap.ext_iff.mpr ; intro y
+    apply ContinuousLinearMap.ext_iff.mpr; intro y
     have l₁: (g'.comp f') y = g' (f' y) := rfl
     have l₂: f' y = ⟪gradf, y⟫ := rfl
     have l₃: g' ⟪gradf, y⟫ = gradg * ⟪gradf, y⟫ := rfl
@@ -296,7 +295,7 @@ theorem HasGradnAt.mul (hf : HasGradnAt f gradf x) (hg : HasGradnAt g gradg x) :
   have h₁: HasFDerivAt (fun x => f x * g x) (f x • g' + g x • f') x:= by
     apply HasFDerivAt.mul hf hg
   have h₂: f x • g' + g x • f' =  (∇* (f x • gradg + g x • gradf)):= by
-    apply ContinuousLinearMap.ext_iff.mpr ; intro y
+    apply ContinuousLinearMap.ext_iff.mpr; intro y
     have l₁: (f x • g' + g x • f') y = (f x • g') y + (g x • f') y:= rfl
     have l₂: (f x • g') y + (g x • f') y = f x * (g' y) + g x * (f' y) := rfl
     have l3: f x * (g' y) + g x * (f' y) = f x * ⟪gradg, y⟫ + g x * ⟪gradf, y⟫ := rfl
@@ -344,7 +343,7 @@ theorem HasGradnAt.constant (c : ℝ ) : HasGradnAt (fun (_ : E) => c) 0 x := by
     rw [sub_self, inner_zero_left, sub_self, norm_zero]
     apply mul_nonneg (LT.lt.le epos) (norm_nonneg (x - x'))
 
-/- 
+/-
   The following theorems concerns the relationship of
   `ε - δ` convergence, gradient and continuity.
 -/
@@ -370,7 +369,7 @@ theorem ContinuousAt_Convergence (h : ContinuousAt f x) :
     exact half_lt_self dpos
   exact LT.lt.le (h this)
 
-theorem Convergence_ContinuousAt 
+theorem Convergence_ContinuousAt
   (h: ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ (x' : E), ‖x - x'‖ ≤ δ → ‖f x' - f x‖ ≤ ε) :
    ContinuousAt f x := by
   rw [continuousAt_def]
@@ -415,7 +414,7 @@ theorem ContinuousAt_Convergence_onedim {f : ℝ → ℝ} {x : ℝ} (h : Continu
     exact half_lt_self dpos
   exact LT.lt.le (h this)
 
-theorem Convergence_ContinuousAt_onedim {f : ℝ → ℝ } {x : ℝ} 
+theorem Convergence_ContinuousAt_onedim {f : ℝ → ℝ } {x : ℝ}
   (h: ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ (x' : ℝ), ‖x - x'‖ ≤ δ → ‖f x' - f x‖ ≤ ε) :
     ContinuousAt f x := by
   rw [continuousAt_def]
